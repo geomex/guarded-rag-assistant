@@ -14,11 +14,15 @@
 
 from pydantic import BaseModel, Field
 
+import sys
+sys.path.append("../")
+from docsassist.i18n import gettext
+
 
 class AppSettings(BaseModel):
     page_title: str = Field(description="The title of the app webpage")
 
 
 app_settings = AppSettings(
-    page_title="Guarded RAG Assistant",
+    page_title=gettext("Guarded RAG Assistant"),
 )

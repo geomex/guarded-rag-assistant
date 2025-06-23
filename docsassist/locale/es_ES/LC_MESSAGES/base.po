@@ -63,6 +63,10 @@ msgstr "Obteniendo respuesta de IA..."
 msgid "Guarded RAG Assistant"
 msgstr "Asistente RAG Protegido"
 
+#: frontend/settings.py:20
+msgid "Guarded RAG Assistant"
+msgstr "Asistente RAG Protegido"
+
 # Blocked question messages
 msgid "I have detected that your question contains inappropriate content. Please rephrase your question to focus on policy information from the authorized documents."
 msgstr "He detectado que su pregunta contiene contenido inapropiado. Por favor reformule su pregunta para enfocarse en información de políticas de los documentos autorizados."

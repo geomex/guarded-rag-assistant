@@ -28,6 +28,8 @@ from docsassist.deployments import RAGDeployment  # noqa: E402
 from docsassist.schema import (  # noqa: E402
     RAGOutput,
 )
+from docsassist.document_validator import QueryValidator
+from docsassist.i18n import gettext
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +55,19 @@ def get_rag_completion(
     question: str, messages: list[ChatCompletionMessageParam]
 ) -> RAGOutput:
     """Retrieve predictions from a DataRobot RAG deployment and DataRobot guard deployment"""
+    # Query guardrail: block disallowed questions
+    validator = QueryValidator()
+    is_blocked, reason = validator.is_query_blocked(question)
+    if is_blocked:
+        fallback_message = reason or gettext(
+            "I have detected that your question contains inappropriate content. Please rephrase your question to focus on policy information from the authorized documents."
+        )
+        return RAGOutput(
+            completion=fallback_message,
+            references=[],
+            question=question,
+        )
+
     dr_client = dr.client.get_client()
     openai_client = OpenAI(
         base_url=dr_client.endpoint + f"/deployments/{rag_deployment_id}",

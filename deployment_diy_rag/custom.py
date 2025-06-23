@@ -54,12 +54,13 @@ sys.path.append("../")
 
 from docsassist.credentials import AzureOpenAICredentials
 from docsassist.schema import PROMPT_COLUMN_NAME, TARGET_COLUMN_NAME, RAGModelSettings
+from docsassist.document_validator import DocumentValidator
 
 
 def get_chain(
     input_dir, credentials: AzureOpenAICredentials, model_settings: RAGModelSettings
 ):
-    """Instantiate the RAG chain."""
+    """Instantiate the RAG chain with document validation."""
     embedding_function = HuggingFaceEmbeddings(
         model_name=model_settings.embedding_model_name,
         cache_folder=input_dir + "/sentencetransformers",
@@ -69,6 +70,18 @@ def get_chain(
         embeddings=embedding_function,
         allow_dangerous_deserialization=True,
     )
+
+    # Wrap the retriever to filter docs using DocumentValidator
+    class ValidatingRetriever(VectorStoreRetriever):
+        def get_relevant_documents(self, query: str):
+            docs = super().get_relevant_documents(query)
+            validator = DocumentValidator()
+            valid_docs = []
+            for doc in docs:
+                meta = validator.extract_document_metadata(doc.page_content, doc.metadata.get("source", ""))
+                if validator.is_document_approved(meta):
+                    valid_docs.append(doc)
+            return valid_docs
 
     llm = AzureChatOpenAI(
         deployment_name=credentials.azure_deployment,
@@ -81,7 +94,7 @@ def get_chain(
         max_retries=model_settings.max_retries,
         request_timeout=model_settings.request_timeout,
     )
-    retriever = VectorStoreRetriever(
+    retriever = ValidatingRetriever(
         vectorstore=db,
     )
     system_template = model_settings.stuff_prompt
@@ -112,9 +125,6 @@ def get_chain(
             ("human", "{input}"),
         ]
     )
-    # Below we use create_stuff_documents_chain to feed all retrieved context
-    # into the LLM. Note that we can also use StuffDocumentsChain and other
-    # instances of BaseCombineDocumentsChain.
     question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
     rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
     return rag_chain
