@@ -28,11 +28,12 @@ from pydantic_settings import BaseSettings
 class LanguageCode(str, Enum):
     EN = "en_US"
     JA = "ja_JP"
-    ALL = {EN, JA}
+    ES = "es_ES"
+    ALL = {EN, JA, ES}
 
 
 # Locale for prompts and app front end
-APP_LOCALE: LanguageCode = LanguageCode.EN
+APP_LOCALE: LanguageCode = LanguageCode.ES
 
 app_locale_env_name: str = "APP_LOCALE"
 

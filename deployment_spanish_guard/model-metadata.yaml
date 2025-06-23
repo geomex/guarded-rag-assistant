@@ -1,0 +1,13 @@
+---
+name: runtime-params
+targetType: binary
+type: inference
+inferenceModel:
+  targetName: blocked
+  positiveClassLabel: true
+  negativeClassLabel: false
+runtimeParameterDefinitions:
+  - fieldName: blocked_patterns
+    type: string
+  - fieldName: prompt_feature_name
+    type: string 

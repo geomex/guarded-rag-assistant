@@ -39,6 +39,7 @@ from infra import (
     settings_guardrails,
     settings_keyword_guard,
     settings_main,
+    settings_spanish_guardrails,
 )
 from infra.settings_global_model_guardrails import global_guardrails
 from infra.settings_proxy_llm import CHAT_MODEL_NAME
@@ -93,6 +94,23 @@ keyword_guard_deployment = CustomModelDeployment(
     deployment_args=settings_keyword_guard.deployment_args,
 )
 
+# Spanish-specific guardrail deployments
+spanish_guard_deployment = CustomModelDeployment(
+    resource_name=f"Spanish Query Guard [{settings_main.project_name}]",
+    custom_model_args=settings_spanish_guardrails.spanish_guard_custom_model_args,
+    registered_model_args=settings_spanish_guardrails.spanish_guard_registered_model_args,
+    prediction_environment=prediction_environment,
+    deployment_args=settings_spanish_guardrails.spanish_guard_deployment_args,
+)
+
+document_scope_guard_deployment = CustomModelDeployment(
+    resource_name=f"Document Scope Guard [{settings_main.project_name}]",
+    custom_model_args=settings_spanish_guardrails.document_scope_guard_custom_model_args,
+    registered_model_args=settings_spanish_guardrails.document_scope_guard_registered_model_args,
+    prediction_environment=prediction_environment,
+    deployment_args=settings_spanish_guardrails.document_scope_guard_deployment_args,
+)
+
 global_guard_deployments = [
     datarobot.Deployment(
         registered_model_version_id=datarobot.get_global_model(
@@ -105,10 +123,16 @@ global_guard_deployments = [
     for guard in global_guardrails
 ]
 
-all_guard_deployments = [keyword_guard_deployment] + global_guard_deployments
+all_guard_deployments = [
+    keyword_guard_deployment, 
+    spanish_guard_deployment, 
+    document_scope_guard_deployment
+] + global_guard_deployments
 
 all_guardrails_configs = [
-    settings_keyword_guard.custom_model_guard_configuration_args
+    settings_keyword_guard.custom_model_guard_configuration_args,
+    settings_spanish_guardrails.spanish_guard_configuration_args,
+    settings_spanish_guardrails.document_scope_guard_configuration_args,
 ] + [guard.custom_model_guard_configuration_args for guard in global_guardrails]
 
 

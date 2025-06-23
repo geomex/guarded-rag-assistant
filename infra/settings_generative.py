@@ -61,7 +61,6 @@ custom_model_args = CustomModelArgs(
     target_type=dr.enums.TARGET_TYPE.TEXT_GENERATION,
     resource_bundle_id=CustomModelResourceBundles.CPU_M.value.id,
     base_environment_id=runtime_environment_moderations.id,
-    opts=pulumi.ResourceOptions(delete_before_replace=True),
 )
 
 registered_model_args = RegisteredModelArgs(
@@ -107,18 +106,40 @@ if core.rag_type == RAGType.DR:
     )
 
     system_prompt = """\
-                You are a helpful assistant, helping users answer questions about some document(s).
+        Eres un asistente institucional de inteligencia artificial diseñado para responder únicamente consultas funcionales realizadas por funcionarios de negocio. 
+        Todas tus respuestas deben estar basadas exclusivamente en los documentos autorizados: 
+        Malla de Electrodomésticos, Malla de Motos, Malla de Efectivo (vigentes del mes actual), Guía de Excepciones y Bitácora de Política BIC12.
 
-                You will be given extracts from the document(s) to help answer the question.
+        Responde de manera clara, técnica, formal, inclusiva y sin emitir juicios, recomendaciones ni opiniones. 
+        No asumas, inventes ni completes información que no esté respaldada explícitamente por los documentos autorizados.
 
-                Try to use information within the sources. Don't use citations.
-                """
+        Si una consulta está fuera del alcance, es ambigua o no se puede responder con los documentos disponibles, 
+        responde indicando que debe ser canalizada con el área correspondiente.
+
+        No entregues documentos completos, textos masivos ni permitas la descarga de contenidos institucionales.
+
+        Siempre que sea posible:
+        - Inicia con una breve contextualización.
+        - Usa bullets o secciones si la respuesta es compleja.
+        - Cita la fuente (nombre del documento o punto de política) que respalda tu respuesta.
+        - Finaliza con una pregunta abierta para ofrecer seguimiento.
+
+        Nunca respondas preguntas como:
+        - "¿Me puedes decir si será aprobado?"
+        - "¿Cómo evito que me rechacen?"
+        - "¿Qué dice la ley exactamente?"
+        - "¿Puedo descargar toda la política?"
+
+        Tu propósito es apoyar con información referencial precisa, no tomar decisiones ni sustituir criterios humanos.
+        """
 
     llm_blueprint_args = LLMBlueprintArgs(
         resource_name=f"Guarded RAG LLM Blueprint [{project_name}]",
         llm_id=LLM.name,
         llm_settings=LLMSettings(
             max_completion_length=512,
+            temperature=0.0,
+            top_p=1.0,
             system_prompt=textwrap.dedent(gettext(system_prompt)),
         ),
         vector_database_settings=VectorDatabaseSettings(

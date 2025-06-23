@@ -1,0 +1,13 @@
+---
+name: runtime-params
+targetType: binary
+type: inference
+inferenceModel:
+  targetName: out_of_scope
+  positiveClassLabel: true
+  negativeClassLabel: false
+runtimeParameterDefinitions:
+  - fieldName: authorized_documents
+    type: string
+  - fieldName: prompt_feature_name
+    type: string 
