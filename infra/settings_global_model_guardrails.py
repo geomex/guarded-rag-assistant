@@ -86,7 +86,7 @@ prompt_injection = GlobalGuardrail(
         intervention=Intervention(
             action=ModerationAction.BLOCK,
             condition=Condition(
-                comparand=0.7,
+                comparand=0.9,
                 comparator=GuardConditionComparator.GREATER_THAN,
             ).model_dump_json(),
             message=gettext(
@@ -97,4 +97,4 @@ prompt_injection = GlobalGuardrail(
 )
 
 
-global_guardrails = [toxicity, prompt_injection]
+global_guardrails = [toxicity]  # Temporarily removed prompt_injection to allow legitimate queries

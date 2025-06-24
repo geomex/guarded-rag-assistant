@@ -95,21 +95,21 @@ keyword_guard_deployment = CustomModelDeployment(
 )
 
 # Spanish-specific guardrail deployments
-spanish_guard_deployment = CustomModelDeployment(
-    resource_name=f"Spanish Query Guard [{settings_main.project_name}]",
-    custom_model_args=settings_spanish_guardrails.spanish_guard_custom_model_args,
-    registered_model_args=settings_spanish_guardrails.spanish_guard_registered_model_args,
-    prediction_environment=prediction_environment,
-    deployment_args=settings_spanish_guardrails.spanish_guard_deployment_args,
-)
+# spanish_guard_deployment = CustomModelDeployment(
+#     resource_name=f"Spanish Query Guard [{settings_main.project_name}]",
+#     custom_model_args=settings_spanish_guardrails.spanish_guard_custom_model_args,
+#     registered_model_args=settings_spanish_guardrails.spanish_guard_registered_model_args,
+#     prediction_environment=prediction_environment,
+#     deployment_args=settings_spanish_guardrails.spanish_guard_deployment_args,
+# )
 
-document_scope_guard_deployment = CustomModelDeployment(
-    resource_name=f"Document Scope Guard [{settings_main.project_name}]",
-    custom_model_args=settings_spanish_guardrails.document_scope_guard_custom_model_args,
-    registered_model_args=settings_spanish_guardrails.document_scope_guard_registered_model_args,
-    prediction_environment=prediction_environment,
-    deployment_args=settings_spanish_guardrails.document_scope_guard_deployment_args,
-)
+# document_scope_guard_deployment = CustomModelDeployment(
+#     resource_name=f"Document Scope Guard [{settings_main.project_name}]",
+#     custom_model_args=settings_spanish_guardrails.document_scope_guard_custom_model_args,
+#     registered_model_args=settings_spanish_guardrails.document_scope_guard_registered_model_args,
+#     prediction_environment=prediction_environment,
+#     deployment_args=settings_spanish_guardrails.document_scope_guard_deployment_args,
+# )
 
 global_guard_deployments = [
     datarobot.Deployment(
@@ -125,14 +125,14 @@ global_guard_deployments = [
 
 all_guard_deployments = [
     keyword_guard_deployment, 
-    spanish_guard_deployment, 
-    document_scope_guard_deployment
+    # spanish_guard_deployment,  # Temporarily disabled - too restrictive
+    # document_scope_guard_deployment,  # Temporarily disabled - too restrictive
 ] + global_guard_deployments
 
 all_guardrails_configs = [
     settings_keyword_guard.custom_model_guard_configuration_args,
-    settings_spanish_guardrails.spanish_guard_configuration_args,
-    settings_spanish_guardrails.document_scope_guard_configuration_args,
+    # settings_spanish_guardrails.spanish_guard_configuration_args,  # Temporarily disabled
+    # settings_spanish_guardrails.document_scope_guard_configuration_args,  # Temporarily disabled
 ] + [guard.custom_model_guard_configuration_args for guard in global_guardrails]
 
 

@@ -222,4 +222,100 @@ document_scope_guard_configuration_args = CustomModelGuardConfigurationArgs(
     ),
     input_column_name="guardrailText",
     output_column_name=f"{document_scope_guard_target_name}_{document_scope_guard_positive_class_label}_PREDICTION",
+)
+
+# Spanish Prompt Injection Guard - Custom implementation for Spanish business terms
+spanish_prompt_injection_guard_target_name = "prompt_injection"
+spanish_prompt_injection_guard_positive_class_label = "true"
+spanish_prompt_injection_guard_negative_class_label = "false"
+
+# Legitimate Spanish business terms that should NOT be flagged as prompt injection
+legitimate_business_terms = [
+    "matriz de datos", "matriz", "datos", "información", "política", "politica",
+    "trabajador", "empleado", "cliente", "segmento", "verificación", "verificacion",
+    "período", "periodo", "requerido", "formal", "independiente", "vip", "vip1",
+    "electrodomésticos", "electrodomesticos", "motos", "efectivo", "excepciones",
+    "bitácora", "bitacora", "bic12", "malla", "guía", "guia", "política", "politica"
+]
+
+# Actual prompt injection patterns in Spanish
+spanish_prompt_injection_patterns = [
+    r'\b(ignora|olvida)\s+(anterior|todo|todo lo anterior)\b',
+    r'\b(actúa|actua)\s+como\s+(si fueras|si fueras)\b',
+    r'\b(eres|tu eres)\s+(un|una)\s+(programador|desarrollador|hacker)\b',
+    r'\b(escribe|genera)\s+(código|codigo)\s+(para|que)\b',
+    r'\b(bypass|evadir|saltar)\s+(seguridad|filtros|restricciones)\b',
+    r'\b(sistema|prompt)\s+(anterior|previo)\s+(no|no existe)\b',
+    r'\b(instrucciones|instrucciones)\s+(secretas|ocultas|especiales)\b',
+    r'\b(rol|role)\s+(de|del)\s+(sistema|asistente)\b',
+    r'\b(confidencial|secreto)\s+(información|informacion)\b',
+    r'\b(acceso|acceder)\s+(a|al)\s+(sistema|base de datos)\b'
+]
+
+spanish_prompt_injection_guard_custom_model_args = CustomModelArgs(
+    name=f"Spanish Prompt Injection Guard Custom Model [{project_name}]",
+    resource_name=f"Spanish Prompt Injection Guard Custom Model [{project_name}]",
+    description="Este modelo detecta inyecciones de prompt en español, excluyendo términos empresariales legítimos",
+    base_environment_id=runtime_environment_moderations.id,
+    target_name=spanish_prompt_injection_guard_target_name,
+    target_type=dr.enums.TARGET_TYPE.BINARY,
+    positive_class_label=spanish_prompt_injection_guard_positive_class_label,
+    negative_class_label=spanish_prompt_injection_guard_negative_class_label,
+    runtime_parameter_values=[
+        datarobot.CustomModelRuntimeParameterValueArgs(
+            key="legitimate_terms",
+            type="string",
+            value=json.dumps(legitimate_business_terms),
+        ),
+        datarobot.CustomModelRuntimeParameterValueArgs(
+            key="injection_patterns",
+            type="string",
+            value=json.dumps(spanish_prompt_injection_patterns),
+        ),
+        datarobot.CustomModelRuntimeParameterValueArgs(
+            key="prompt_feature_name",
+            type="string",
+            value="guardrailText",
+        ),
+    ],
+    folder_path=str(PROJECT_ROOT / "deployment_spanish_prompt_injection_guard"),
+)
+
+spanish_prompt_injection_guard_registered_model_args = RegisteredModelArgs(
+    resource_name=f"Spanish Prompt Injection Guard Registered Model [{project_name}]",
+)
+
+spanish_prompt_injection_guard_deployment_args = DeploymentArgs(
+    resource_name=f"Spanish Prompt Injection Guard Deployment [{project_name}]",
+    label=f"Spanish Prompt Injection Guard Deployment [{project_name}]",
+    predictions_settings=(
+        None
+        if default_prediction_server_id
+        else datarobot.DeploymentPredictionsSettingsArgs(min_computes=0, max_computes=1)
+    ),
+)
+
+spanish_prompt_injection_guard_configuration_args = CustomModelGuardConfigurationArgs(
+    template_name=GuardrailTemplateNames.CUSTOM_DEPLOYMENT,
+    name=f"Spanish Prompt Injection Guard Configuration [{project_name}]",
+    stages=[Stage.PROMPT],
+    intervention=Intervention(
+        action=ModerationAction.BLOCK,
+        condition=Condition(
+            comparand=1,
+            comparator=GuardConditionComparator.EQUALS,
+        ).model_dump_json(),
+        message=textwrap.dedent(
+            gettext(
+                """\
+                He detectado que su pregunta contiene una inyección de prompt. 
+                
+                Por favor, reformule su pregunta para enfocarse en información 
+                de políticas de los documentos autorizados sin intentar 
+                modificar mi comportamiento o acceder a información del sistema."""
+            )
+        ),
+    ),
+    input_column_name="guardrailText",
+    output_column_name=f"{spanish_prompt_injection_guard_target_name}_{spanish_prompt_injection_guard_positive_class_label}_PREDICTION",
 ) 
