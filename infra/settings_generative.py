@@ -59,7 +59,7 @@ custom_model_args = CustomModelArgs(
     name="Guarded RAG Assistant",  # built-in QA app uses this as the AI's name
     target_name=TARGET_COLUMN_NAME,
     target_type=dr.enums.TARGET_TYPE.TEXT_GENERATION,
-    resource_bundle_id=CustomModelResourceBundles.CPU_M.value.id,
+    resource_bundle_id=CustomModelResourceBundles.CPU_L.value.id,
     base_environment_id=runtime_environment_moderations.id,
 )
 
