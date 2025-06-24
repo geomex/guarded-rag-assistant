@@ -3,3 +3,20 @@ type: inference
 targetType: {{ target_type | lower }}
 runtimeParameterDefinitions:
 {{ runtime_parameters }}
+featureDefinitions:
+  - name: promptText
+    type: text
+    dataType: text
+    description: "User prompt/query"
+  - name: messages
+    type: text
+    dataType: text
+    description: "Chat history messages"
+  - name: association_id
+    type: text
+    dataType: text
+    description: "Unique identifier for the prediction request"
+  - name: resultText
+    type: text
+    dataType: text
+    description: "Model response/prediction"

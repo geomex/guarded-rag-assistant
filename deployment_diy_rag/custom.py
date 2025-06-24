@@ -157,6 +157,10 @@ def score(data: pd.DataFrame, model: Runnable, **kwargs) -> pd.DataFrame:
     for _, row in data.iterrows():
         question = row[PROMPT_COLUMN_NAME]
         chat_history = parse_chat_history(row.get("messages", ""))
+        
+        # Log the input for MLOps tracking
+        print(f"Processing prompt: {question[:100]}...")  # Log first 100 chars
+        
         result = process_single_row(
             question, chat_history, chain, target_column_name=TARGET_COLUMN_NAME
         )
