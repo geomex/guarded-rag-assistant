@@ -100,7 +100,7 @@ if core.rag_type == RAGType.DR:
         resource_name=f"Guarded RAG Vector DB [{project_name}]",
         chunking_parameters=ChunkingParameters(
             embedding_model=dr.enums.VectorDatabaseEmbeddingModel.JINA_EMBEDDING_T_EN_V1,
-            chunk_size=512,
+            chunk_size=256,
             chunk_overlap_percentage=20,
         ),
     )
