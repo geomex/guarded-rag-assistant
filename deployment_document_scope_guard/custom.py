@@ -50,9 +50,22 @@ def score(data, model, **kwargs):
         # Check if query mentions any authorized document
         mentions_authorized_doc = any(pattern.search(prompt_lower) for pattern in document_patterns)
         
-        # If no authorized documents are mentioned, it might be out of scope
-        # This is a simplified check - in practice, you'd do more sophisticated analysis
-        is_out_of_scope = not mentions_authorized_doc
+        # Only block if the query explicitly mentions topics outside the scope
+        # This is a more nuanced approach - only block clearly out-of-scope queries
+        out_of_scope_keywords = [
+            "demandar", "demanda", "abogado", "juez", "tribunal", "corte",
+            "ley", "código", "reglamento", "normativa", "legislación",
+            "competidor", "competencia", "otra empresa", "otro banco",
+            "descargar", "download", "archivo completo", "documento completo",
+            "política externa", "regulación gubernamental", "ley federal",
+            "impuestos", "hacienda", "sat", "contabilidad", "auditoría"
+        ]
+        
+        # Check for out-of-scope keywords
+        has_out_of_scope_keywords = any(keyword in prompt_lower for keyword in out_of_scope_keywords)
+        
+        # Only block if it has out-of-scope keywords AND doesn't mention authorized docs
+        is_out_of_scope = has_out_of_scope_keywords and not mentions_authorized_doc
         
         output.append(
             {positive_label: float(is_out_of_scope), negative_label: 1 - float(is_out_of_scope)}
