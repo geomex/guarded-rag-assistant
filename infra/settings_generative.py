@@ -51,7 +51,7 @@ from .settings_main import (
     runtime_environment_moderations,
 )
 
-LLM = LLMs.AZURE_OPENAI_GPT_4_O_MINI
+LLM = LLMs.AZURE_OPENAI_GPT_4_O
 
 
 custom_model_args = CustomModelArgs(
@@ -99,9 +99,9 @@ if core.rag_type == RAGType.DR:
     vector_database_args = VectorDatabaseArgs(
         resource_name=f"Guarded RAG Vector DB [{project_name}]",
         chunking_parameters=ChunkingParameters(
-            embedding_model=dr.enums.VectorDatabaseEmbeddingModel.JINA_EMBEDDING_T_EN_V1,
             chunk_size=256,
-            chunk_overlap_percentage=20,
+            embedding_model=dr.enums.VectorDatabaseEmbeddingModel.ALL_MINILM_L6_V2,
+            chunk_overlap_percentage=10,
         ),
     )
 
