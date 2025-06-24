@@ -81,4 +81,10 @@ msgid "Your question appears to be outside the scope of the authorized documents
 msgstr "Su pregunta parece estar fuera del alcance de los documentos autorizados. Por favor contacte al departamento correspondiente para obtener ayuda."
 
 msgid "I cannot provide legal interpretations or exact legal text. I can only provide information based on the authorized policy documents."
-msgstr "No puedo proporcionar interpretaciones legales ni texto legal exacto. Solo puedo proporcionar información basada en los documentos de política autorizados." 
+msgstr "No puedo proporcionar interpretaciones legales ni texto legal exacto. Solo puedo proporcionar información basada en los documentos de política autorizados."
+
+msgid "I have detected that your question contains a prompt injection. Please rephrase your question."
+msgstr "He detectado que su pregunta contiene una inyección de prompt. Por favor reformule su pregunta."
+
+msgid "I have detected that your question contains toxic language. Please rephrase your question."
+msgstr "He detectado que su pregunta contiene lenguaje tóxico. Por favor reformule su pregunta." 

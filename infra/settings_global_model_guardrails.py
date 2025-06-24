@@ -90,7 +90,7 @@ prompt_injection = GlobalGuardrail(
                 comparator=GuardConditionComparator.GREATER_THAN,
             ).model_dump_json(),
             message=gettext(
-                "I have detected that your question contains a prompt injection. Please rephrase your question."
+                "He detectado que su pregunta contiene una inyección de prompt. Por favor reformule su pregunta."
             ),
         ),
     ),
